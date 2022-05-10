@@ -1,20 +1,37 @@
-
 import csv
+import re
 
+CLEANR = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
+
+def cleanhtml(raw_html):
+  cleantext = re.sub(CLEANR, '', raw_html)
+  return cleantext
 
 def read_CSV_File():
 
-    with open(r"C:\\Users\\Nemo\\Desktop\\CSV_Conv\\catalog_products.csv", newline='') as csvfile:
+    with open(r"product1652128393.csv", newline='', encoding="utf8") as csvfile:
         data = csv.DictReader(csvfile)
-        print("ID Department Name")
-        print("---------------------------------")
+        rows=[]
         for row in data:
-            print(row['id'])
+            rows.append([
+                row['id'],
+                row['title'],
+                cleanhtml(row['description']),
+                row['availability'],
+                'new',
+                row['price'],
+                row['link'],
+                row['image_link'],
+                row['Manufacturer']
+            ])
+
+        return rows
+#                 ['id', 'title', 'description', 'availability', 'condition', 'price', 'link', 'image_link', 'brand'],
 
 def create_CSV_file(filename, fields, rows):
 
     # writing to csv file
-    with open(filename, 'w') as csvfile:
+    with open(filename, 'w',  newline='', encoding='utf-8') as csvfile:
         # creating a csv writer object
         csvwriter = csv.writer(csvfile)
 
@@ -29,19 +46,15 @@ def create_CSV_file(filename, fields, rows):
 if __name__ == '__main__':
 
 
-    columns, rows = read_CSV_File()
-
+    rows = read_CSV_File()
+    print(rows)
     # name of csv file
-    filename = "my.csv"
+    filename = "facebook_catalog.csv"
     # field names
-    # create_CSV_file(filename,
-    #                 ['Name', 'Branch', 'Year', 'CGPA'],
-    #                 [['Nikhil', 'COE', '2', '9.0'],
-    #                 ['Sanchit', 'COE', '2', '9.1'],
-    #                 ['Aditya', 'IT', '2', '9.3'],
-    #                 ['Sagar', 'SE', '1', '9.5'],
-    #                 ['Prateek', 'MCE', '3', '7.8'],
-    #                 ['Sahil', 'EP', '2', '9.1']])
+    create_CSV_file(filename,
+                    ['id', 'title', 'description', 'availability', 'condition', 'price', 'link', 'image_link', 'brand'],
+
+                    rows)
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
